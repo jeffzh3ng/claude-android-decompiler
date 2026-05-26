@@ -1,0 +1,37 @@
+# Frida server binaries (large, multi-arch)
+tools/frida/
+
+# jadx (large jar)
+tools/jadx/
+
+# APK files
+apk/
+
+# Output artifacts
+output/
+
+# Trash
+_trash/
+
+# Temporary files
+temp/
+
+# Claude internal
+.claude/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+Desktop.ini
