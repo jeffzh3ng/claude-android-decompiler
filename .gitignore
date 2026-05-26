@@ -5,6 +5,7 @@ tools/frida/
 tools/jadx/
 
 # APK files
+*.apk
 apk/
 
 # Output artifacts
