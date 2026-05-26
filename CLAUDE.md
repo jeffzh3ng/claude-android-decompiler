@@ -550,14 +550,47 @@ output/<package_name>/
 ├── fixed/                     # repair 后的 DEX
 ├── normalized/                # normalize 后的 DEX (如需要)
 ├── extended/                  # recarve 的扩展 DEX (如需要)
+├── all_urls.csv               # 所有 URL 及来源 DEX 映射
 ├── http_indicators.csv        # 全部 HTTP 接口指标
 ├── api_endpoints.csv          # 业务 API 端点汇总
 ├── security_audit.csv         # 安全审计结果
-├── SECURITY_AUDIT.md          # 安全审计报告
-└── API_REPORT.md              # API 分析报告 (如生成)
+├── report.html                # **聚合 HTML 报告** (脱壳完成后必须生成)
+└── SECURITY_AUDIT.md          # 安全审计报告 (由 report.html 替代)
 ```
 
 **工作流完成后必须确保**:
 - 根目录只有 `CLAUDE.md`，没有散落的 `.json` / `.csv` / `.dex` / `.bin` / `.maps` / `.apk`
 - `temp/` 中的中间产物在工作完成后清理
 - `apk/` 中只保留源 APK，不保留脱壳产物
+
+## 生成聚合报告
+
+> **脱壳 + 接口提取 + 安全审计全部完成后，必须执行此步骤生成最终 HTML 报告。**
+
+```bash
+python scripts/generate_report.py --output-dir output/<package_name>
+# 产出: output/<package_name>/report.html
+```
+
+### 报告要求
+
+`generate_report.py` 从 output 目录的所有 CSV 和 DEX 文件中聚合数据，生成自包含的单文件 HTML 报告（内联 CSS，无外部依赖）。
+
+**报告必须包含以下 6 个 Section：**
+
+1. **头部摘要卡片** — 包名、生成时间、DEX 数 / 总类数 / 总字符串数 / API 端点数 / 安全发现（按 CRITICAL/HIGH/MEDIUM/LOW 分色）
+2. **加固与壳信息** — 壳类型检测、Jiagu SO 状态、SecNeo 内存段统计、DEX 清单表（文件名/大小/类数/字符串数/壳或真实标记）
+3. **API 端点分析** — 分业务/第三方两个子表，每行含：域名、路径、完整 URL、**来源 DEX 文件名**（通过 all_urls.csv 反查）
+4. **安全审计发现** — 严重度彩色 badge（CRITICAL=红 / HIGH=橙 / MEDIUM=黄 / LOW=青）、分类、发现描述、证据
+5. **技术栈与依赖** — 从 DEX 字符串中检测 SDK/库（OkHttp/Retrofit/Fastjson/Spring/TBS 等 30 种模式）
+6. **页脚** — 生成工具名 + 时间戳
+
+### 设计约束
+
+- 中文标签为主
+- 严重度颜色固定: CRITICAL=#dc3545, HIGH=#fd7e14, MEDIUM=#ffc107, LOW=#17a2b8
+- 响应式布局，支持打印
+- 各数据源文件缺失时优雅降级（显示 "无数据"），不得崩溃
+- 壳检测规则: `classes01_*` 且 class_defs < 50 → 壳 DEX
+- 第三方判断复用 `filter_business_http.py` 的关键词列表
+- DEX 字符串中的 `/` 分隔符需归一化为 `.` 后再匹配 SDK 模式
