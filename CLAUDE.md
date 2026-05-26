@@ -511,6 +511,7 @@ python scripts/filter_business_http.py
 | `scripts/extract_dex_strings_urls.py` | 直接从 DEX 字符串表提取 API 端点 |
 | `scripts/filter_business_http.py` | 过滤业务相关 HTTP 指标 |
 | `scripts/security_audit.py` | **安全审计** (硬编码凭证/SSL/加密/WebView/日志) |
+| `scripts/generate_report.py` | **生成 HTML 报告** (聚合所有产物为可视化报告) |
 | `scripts/spawn_collect.py` | Spawn APP + 收集设备端 code_cache/files |
 | `scripts/static_extract_assets.py` | 静态提取 APK assets 中的 URL/域名 |
 
